@@ -11,7 +11,7 @@
                     </el-button>
                     <input type="file" id="files" ref='refFile' style='display:none' @change="fileLoad">
                     <!-- <upload></upload> -->
-                    <el-button type='primary' plain>
+                    <el-button type='primary' plain @click="displaySketch">
                         Draw
                     </el-button>
                     <el-button type='primary' plain>
@@ -27,8 +27,8 @@
             </el-col>
             <el-col :span='18'>
                 <div class='main_part'>
-                    <!-- {{points}} -->
-                    <viewport></viewport>
+                    <viewport v-if="reFresh" :points="points"></viewport>
+                    <rootview v-if="sketchReFresh" />
                 </div>
             </el-col>
             <el-col :span='3'>
@@ -62,25 +62,52 @@
 <script>
 // import upload from '../components/upload.vue'
 import ViewPort from '../components/ViewPort.vue'
+import RootView from '../components/RootView.vue'
 
 export default {
   name: 'sketchPC',
+  data () {
+    return {
+      points: this.points,
+      reFresh: false,
+      sketchReFresh: false
+    }
+  },
+  watch: {
+    'points': function (val) {
+      this.reFresh = false
+      this.$nextTick(() => {
+        this.reFresh = true
+      })
+    }
+  },
   components: {
   //     upload
-    viewport: ViewPort
+    viewport: ViewPort,
+    rootview: RootView
   },
   methods: {
     importFile () {
       document.getElementById('files').click()
     },
-    fileLoad () {
+    fileLoad (points) {
     //   let points
+      let $ = this
       const selectedFile = this.$refs.refFile.files[0]
       let reader = new FileReader()
       reader.readAsText(selectedFile)
       reader.onload = function () {
         // console.log(this.result)
         // points = this.result
+        // $.points = 'hahahahaha'
+        $.$data.displayPC = true
+        $.$data.points = this.result
+      }
+    },
+    displaySketch () {
+      // eslint-disable-next-line eqeqeq
+      if (this.sketchReFresh == false) {
+        this.sketchReFresh = true
       }
     }
   }
@@ -122,6 +149,7 @@ export default {
     background: #d9ecff;
     /* min-height:50px; */
     height:100%;
+    position: relative;
 }
 .right_bottom{
     position: fixed;

@@ -14,11 +14,15 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "three-full": "^17.1.0",
     "@popperjs/core": "^2.10.2",
+    "axios": "^0.21.1",
+    "canvas2image": "^1.0.5",
     "element-ui": "^2.15.6",
+    "konva": "^8.2.2",
     "three": "^0.133.1",
+    "three-full": "^17.1.0",
     "vue": "^2.5.2",
+    "vue-material": "^1.0.0-beta-15",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },

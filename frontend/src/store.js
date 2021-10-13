@@ -53,7 +53,7 @@ export default new Vuex.Store({
     INITIALIZE_CAMERA (state) {
       state.camera = new PerspectiveCamera(
         // 1. Field of View (degrees)
-        60,
+        50,
         // 2. Aspect ratio
         state.width / state.height,
         // 3. Near clipping plane
@@ -95,8 +95,11 @@ export default new Vuex.Store({
         color: 0x0000ff
         // flatShading: true
       })
+      points = JSON.parse(points)
+      var pointset = points.point_set
       var x, y, z
-      for (var i = 0; i < 500; i++) {
+      // for (var i = 0; i < 500; i++) {
+      for (var i = 0; i < pointset.length; i++) {
         // var mesh = new Mesh(geometry, material);
         // mesh.position.x = (Math.random() - 0.5) * 1000;
         // mesh.position.y = (Math.random() - 0.5) * 1000;
@@ -105,9 +108,12 @@ export default new Vuex.Store({
         // mesh.matrixAutoUpdate = false;
         // state.pyramids.push(mesh);
         // if (i % 3 == 2) {
-        x = Math.random() * 200
-        y = Math.random() * 200
-        z = Math.random() * 200
+        // x = Math.random() * 200
+        // y = Math.random() * 200
+        // z = Math.random() * 200
+        x = pointset[i][0] * 200
+        y = pointset[i][1] * 200
+        z = pointset[i][2] * 200
         var particle = new Vector3(x, y, z)
         geometry.vertices.push(particle)
         // }
@@ -130,7 +136,7 @@ export default new Vuex.Store({
       // Axis Line 1
       var materialB = new LineBasicMaterial({ color: 0x0000ff })
       var geometryB = new Geometry()
-      geometryB.vertices.push(new Vector3(0, 0, 0))
+      geometryB.vertices.push(new Vector3(0, -1000, 0))
       geometryB.vertices.push(new Vector3(0, 1000, 0))
       var lineA = new Line(geometryB, materialB)
       state.axisLines.push(lineA)
@@ -138,7 +144,7 @@ export default new Vuex.Store({
       // Axis Line 2
       var materialC = new LineBasicMaterial({ color: 0x00ff00 })
       var geometryC = new Geometry()
-      geometryC.vertices.push(new Vector3(0, 0, 0))
+      geometryC.vertices.push(new Vector3(-1000, 0, 0))
       geometryC.vertices.push(new Vector3(1000, 0, 0))
       var lineB = new Line(geometryC, materialC)
       state.axisLines.push(lineB)
@@ -146,7 +152,7 @@ export default new Vuex.Store({
       // Axis 3
       var materialD = new LineBasicMaterial({ color: 0xff0000 })
       var geometryD = new Geometry()
-      geometryD.vertices.push(new Vector3(0, 0, 0))
+      geometryD.vertices.push(new Vector3(0, 0, -1000))
       geometryD.vertices.push(new Vector3(0, 0, 1000))
       var lineC = new Line(geometryD, materialD)
       state.axisLines.push(lineC)

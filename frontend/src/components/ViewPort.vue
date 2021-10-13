@@ -6,6 +6,8 @@
 import { mapMutations, mapActions } from 'vuex'
 
 export default {
+  name: 'ViewPort',
+  props: ['points'],
   data () {
     return {
       height: 0
@@ -19,7 +21,8 @@ export default {
     this.INIT({
       width: this.$el.offsetWidth,
       height: this.$el.offsetHeight,
-      el: this.$el
+      el: this.$el,
+      points: this.points
     }).then(() => {
       this.ANIMATE()
       window.addEventListener(
