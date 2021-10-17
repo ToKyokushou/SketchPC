@@ -2,7 +2,7 @@
   <div class="sketch_container">
     <h1 v-if="title!=null">{{ title }}</h1>
     <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100 canvas_loader_container">
-      <PaintCanvasLoader />
+      <PaintCanvasLoader v-on:getSketchValue='getSketchValue'/>
     </div>
   </div>
 </template>
@@ -15,7 +15,15 @@ export default {
   props: {
     title: String
   },
-  components: { PaintCanvasLoader }
+  components: {
+    PaintCanvasLoader
+  },
+  methods: {
+    getSketchValue (val) {
+      // console.log('sketchValue', val)
+      this.$emit('getSketchData', val)
+    }
+  }
 }
 </script>
 

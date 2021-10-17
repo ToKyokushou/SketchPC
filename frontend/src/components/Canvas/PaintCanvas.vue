@@ -270,7 +270,9 @@ export default {
       let dataUrl = oCanvas.toDataURL({format: 'image/png'})
       dlLink.download = 'sketchImg'
       dlLink.href = dataUrl
-      dlLink.click()
+      // 点击后下载图片
+      // dlLink.click()
+      return dataUrl
 
     //   axios
     //     .post('https://www.ultratks.live/api/sketch/stroke/save_history', {

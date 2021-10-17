@@ -28,12 +28,12 @@
             <el-col :span='18'>
                 <div class='main_part'>
                     <viewport v-if="reFresh" :points="points"></viewport>
-                    <rootview v-if="sketchReFresh" />
+                    <rootview v-if="sketchReFresh" v-on:getSketchData='getSketchData' />
                 </div>
             </el-col>
             <el-col :span='3'>
                 <div class='right_part'>
-                    <el-button type='primary' plain>
+                    <el-button type='primary' plain @click="search3D">
                         3D Search
                     </el-button>
                     <el-button type='primary' plain>
@@ -70,7 +70,8 @@ export default {
     return {
       points: this.points,
       reFresh: false,
-      sketchReFresh: false
+      sketchReFresh: false,
+      sketchData: null
     }
   },
   watch: {
@@ -109,6 +110,30 @@ export default {
       if (this.sketchReFresh == false) {
         this.sketchReFresh = true
       }
+    },
+    search3D () {
+      console.log('start searching 3D content')
+      let postData = {
+        // 'imgUrl': 'img/sketchImg.png'
+        'imgUrl': this.sketchData
+      }
+      // console.log('sketchData', postData.imgUrl)
+      this.axios.post(
+        'http://localhost:5000/search',
+        postData
+      ).then(
+        res => {
+          console.log(res.data)
+        }
+      ).catch(
+        res => {
+          console.log(res.data)
+        }
+      )
+    },
+    getSketchData (data) {
+    //   console.log('sketchData', data)
+      this.sketchData = data
     }
   }
 }

@@ -143,7 +143,9 @@ export default {
       this.$refs.paintCanvas.removeLayer()
     },
     onSave: function () {
-      this.$refs.paintCanvas.onSave()
+      let imgUrl = this.$refs.paintCanvas.onSave()
+      // console.log('imgUrl', imgUrl)
+      this.$emit('getSketchValue', imgUrl)
     }
   }
 }
