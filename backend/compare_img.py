@@ -1,43 +1,44 @@
 # coding=utf-8
 # 导入python包
-from skimage.measure import compare_ssim as ssim
+#from skimage.measure import compare_ssim as ssim
+from skimage.metrics import structural_similarity as ssim
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
+
 def mse(imageA, imageB):
-	# 计算两张图片的MSE指标
-	err = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
-	err /= float(imageA.shape[0] * imageA.shape[1])
-	
-	# 返回结果，该值越小越好
-	return err
+    # 计算两张图片的MSE指标
+    err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
+    err /= float(imageA.shape[0] * imageA.shape[1])
+
+    # 返回结果，该值越小越好
+    return err
+
 
 def compare_images(imageA, imageB, title):
-	# 分别计算输入图片的MSE和SSIM指标值的大小
-	m = mse(imageA, imageB)
-	s = ssim(imageA, imageB)
+    # 分别计算输入图片的MSE和SSIM指标值的大小
+    m = mse(imageA, imageB)
+    s = ssim(imageA, imageB)
 
-	# 创建figure
-	fig = plt.figure(title)
-	plt.suptitle("MSE: %.2f, SSIM: %.2f" % (m, s))
+    # 创建figure
+    fig = plt.figure(title)
+    plt.suptitle("MSE: %.2f, SSIM: %.2f" % (m, s))
 
-	# 显示第一张图片
-	ax = fig.add_subplot(1, 2, 1)
-	plt.imshow(imageA, cmap = plt.cm.gray)
-	plt.axis("off")
+    # 显示第一张图片
+    ax = fig.add_subplot(1, 2, 1)
+    plt.imshow(imageA, cmap=plt.cm.gray)
+    plt.axis("off")
 
-	# 显示第二张图片
-	ax = fig.add_subplot(1, 2, 2)
-	plt.imshow(imageB, cmap = plt.cm.gray)
-	plt.axis("off")
-	plt.tight_layout()
-	plt.show()
- 
-	return {
-		'mse': m,
-		'ssim': s
-	}
+    # 显示第二张图片
+    ax = fig.add_subplot(1, 2, 2)
+    plt.imshow(imageB, cmap=plt.cm.gray)
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
+
+    return {'mse': m, 'ssim': s}
+
 
 # # 读取图片
 # # original1 = cv2.imread("test3.jpg")

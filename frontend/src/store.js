@@ -80,7 +80,7 @@ export default new Vuex.Store({
     UPDATE_CONTROLS (state) {
       state.controls.update()
     },
-    INITIALIZE_SCENE (state, {points}) {
+    INITIALIZE_SCENE (state, { points }) {
       state.scene = new Scene()
       state.scene.background = new Color(0xcccccc)
       state.scene.fog = new FogExp2(0xcccccc, 0.002)
@@ -100,12 +100,12 @@ export default new Vuex.Store({
       var x, y, z
       // for (var i = 0; i < 500; i++) {
       for (var i = 0; i < pointset.length; i++) {
-        // var mesh = new Mesh(geometry, material);
+        // var mesh = new Mesh(geometry, material)
         // mesh.position.x = (Math.random() - 0.5) * 1000;
         // mesh.position.y = (Math.random() - 0.5) * 1000;
         // mesh.position.z = (Math.random() - 0.5) * 1000;
-        // mesh.updateMatrix();
-        // mesh.matrixAutoUpdate = false;
+        // mesh.updateMatrix()
+        // mesh.matrixAutoUpdate = false
         // state.pyramids.push(mesh);
         // if (i % 3 == 2) {
         // x = Math.random() * 200

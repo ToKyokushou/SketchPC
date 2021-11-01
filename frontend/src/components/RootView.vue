@@ -1,8 +1,13 @@
 <template>
   <div class="sketch_container">
-    <h1 v-if="title!=null">{{ title }}</h1>
-    <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100 canvas_loader_container">
-      <PaintCanvasLoader v-on:getSketchValue='getSketchValue'/>
+    <h1 v-if="title != null">{{ title }}</h1>
+    <div
+      class="
+        md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100
+        canvas_loader_container
+      "
+    >
+      <PaintCanvasLoader v-on:getSketchValue="getSketchValue" />
     </div>
   </div>
 </template>
@@ -43,15 +48,15 @@ li {
 a {
   color: #42b983;
 }
-.sketch_container{
+.sketch_container {
   position: absolute;
-  width:100%;
-  height:100%;
-  top:0;
+  width: 100%;
+  height: 100%;
+  top: 0;
 }
-.canvas_loader_container{
+.canvas_loader_container {
   position: absolute;
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
 </style>
