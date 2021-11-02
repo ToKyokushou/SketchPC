@@ -19,6 +19,9 @@ import {
   // ThreeMFLoader,
   Points,
   PointsMaterial
+  // MTLLoader,
+  // OBJLoader,
+  // Box3
 } from 'three-full'
 
 Vue.use(Vuex)
@@ -84,12 +87,29 @@ export default new Vuex.Store({
       state.scene = new Scene()
       state.scene.background = new Color(0xcccccc)
       state.scene.fog = new FogExp2(0xcccccc, 0.002)
-      // var geometry = new CylinderBufferGeometry(0, 10, 30, 4, 1);
+
+      // var mtlLoader = new MTLLoader()
+      // var objLoader = new OBJLoader()
+      // mtlLoader.load('static/threeDs/girl_complete_03.mtl', function (material) {
+      //   objLoader.setMaterials(material)
+      //     .load('/static/threeDs/girl_complete_03.obj', function (obj) {
+      //       obj.scale.set(10, 10, 10)
+      //       obj.position.set(0, 0, 0)
+      //       let bbox = new Box3().setFromObject(obj)
+      //       // x = bbox.max.x - bbox.min.x
+      //       // y = bbox.max.y - bbox.min.y
+      //       // z = bbox.max.z - bbox.min.z
+      //       obj.position.set(
+      //         -(bbox.max.x + bbox.min.x) / 2,
+      //         -(bbox.max.y + bbox.min.y) / 2,
+      //         -(bbox.max.z + bbox.min.z) / 2
+      //       )
+      //       state.scene.add(obj)
+      //     })
+      // })
+
+      // START: this part is about point clouds
       var geometry = new Geometry()
-      // var material = new MeshPhongMaterial({
-      //   color: 0xffffff,
-      //   flatShading: true
-      // });
       var material = new PointsMaterial({
         size: 5,
         color: 0x0000ff
@@ -98,30 +118,34 @@ export default new Vuex.Store({
       points = JSON.parse(points)
       var pointset = points.point_set
       var x, y, z
-      // for (var i = 0; i < 500; i++) {
       for (var i = 0; i < pointset.length; i++) {
-        // var mesh = new Mesh(geometry, material)
-        // mesh.position.x = (Math.random() - 0.5) * 1000;
-        // mesh.position.y = (Math.random() - 0.5) * 1000;
-        // mesh.position.z = (Math.random() - 0.5) * 1000;
-        // mesh.updateMatrix()
-        // mesh.matrixAutoUpdate = false
-        // state.pyramids.push(mesh);
-        // if (i % 3 == 2) {
-        // x = Math.random() * 200
-        // y = Math.random() * 200
-        // z = Math.random() * 200
         x = pointset[i][0] * 200
         y = pointset[i][1] * 200
         z = pointset[i][2] * 200
         var particle = new Vector3(x, y, z)
         geometry.vertices.push(particle)
-        // }
       }
-      // state.scene.add(...state.pyramids);
       var cloud
       cloud = new Points(geometry, material)
       state.scene.add(cloud)
+      // END: this part is about point clouds
+
+      // START: this part is about mesh
+      // var geometry1 = new CylinderBufferGeometry(0, 100, 300, 20, 1)
+      // // params: up,dowm,height,mesh number,
+      // var material1 = new MeshPhongMaterial({
+      //   color: 0xffffff,
+      //   flatShading: true
+      // })
+      // var mesh = new Mesh(geometry1, material1)
+      // mesh.position.x = 0
+      // mesh.position.y = 0
+      // mesh.position.z = 0
+      // mesh.updateMatrix()
+      // mesh.matrixAutoUpdate = false
+      // state.pyramids.push(mesh)
+      // state.scene.add(...state.pyramids)
+      // END: this part is about mesh
 
       // lights
       var lightA = new DirectionalLight(0xffffff)

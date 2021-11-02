@@ -3,10 +3,8 @@
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    >
-    <div
-      class="md-layout md-gutter action-buttons-part"
-    >
+    />
+    <div class="md-layout md-gutter action-buttons-part">
       <div class="md-layout-item">
         <md-button
           id="draw"
@@ -43,13 +41,13 @@
         >
           <md-icon class="md-size-2x">clear</md-icon>
         </md-button>
-        <md-button
+        <!-- <md-button
           id="draw"
           class="md-icon-button md-primary action_button"
           v-on:click="onAddLayer"
         >
           <md-icon class="md-size-2x">layers</md-icon>
-        </md-button>
+        </md-button> -->
         <!-- TODO: remove layer -->
         <!-- <md-button
           id="draw"
@@ -68,11 +66,7 @@
       </div>
     </div>
     <div class="container">
-      <PaintCanvas
-        ref="paintCanvas"
-        :mode="mode"
-        :brushColor="brushColor"
-      />
+      <PaintCanvas ref="paintCanvas" :mode="mode" :brushColor="brushColor" />
     </div>
   </div>
 </template>
@@ -171,11 +165,11 @@ export default {
   position: absolute;
   left: -124px;
 }
-.loader_container{
-    width: 100%;
-    height: 100%;
+.loader_container {
+  width: 100%;
+  height: 100%;
 }
-.action_button{
-    display: block;
+.action_button {
+  display: block;
 }
 </style>

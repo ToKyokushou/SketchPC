@@ -16,7 +16,7 @@
           />
           <!-- <upload></upload> -->
           <el-button type="primary" plain @click="displaySketch">
-            Draw
+            {{ sketchReFresh ? "Cancel" : "Draw" }}
           </el-button>
           <!-- <el-button type='primary' plain>
                         Clear
@@ -37,10 +37,14 @@
       </el-col>
       <el-col :span="3">
         <div class="right_part">
-          <el-button type="primary" plain @click="search3D">
+          <el-button type="primary" plain @click="openShell">
             3D Search
           </el-button>
+          <!-- <el-button type="primary" plain @click="search3D">
+            3D Search
+          </el-button> -->
           <el-button type="primary" plain> Transform </el-button>
+          <!-- <el-button type="primary" plain @click="openShell"> Shell </el-button> -->
           <div class="right_bottom">
             <p>
               X
@@ -73,7 +77,8 @@ export default {
       points: this.points,
       reFresh: false,
       sketchReFresh: false,
-      sketchData: null
+      sketchData: null,
+      modalData: null
     }
   },
   watch: {
@@ -82,6 +87,12 @@ export default {
       this.$nextTick(() => {
         this.reFresh = true
       })
+    },
+    'modalData': function (val) {
+      console.log('modalData change')
+      let filename = val
+      filename = filename.substring(0, filename.lastIndexOf('/'))
+      console.log(filename)
     }
   },
   components: {
@@ -111,31 +122,53 @@ export default {
       // eslint-disable-next-line eqeqeq
       if (this.sketchReFresh == false) {
         this.sketchReFresh = true
+      } else {
+        this.sketchReFresh = false
       }
     },
-    search3D () {
-      console.log('start searching 3D content')
+    // search3D () {
+    //   console.log('start searching 3D content')
+    //   let postData = {
+    //     // 'imgUrl': 'img/sketchImg.png'
+    //     'imgUrl': this.sketchData
+    //   }
+    //   // console.log('sketchData', postData.imgUrl)
+    //   this.axios.post(
+    //     'http://localhost:5000/search',
+    //     postData
+    //   ).then(
+    //     res => {
+    //       console.log(res.data)
+    //     }
+    //   ).catch(
+    //     res => {
+    //       console.log(res.data)
+    //     }
+    //   )
+    // },
+    getSketchData (data) {
+      //   console.log('sketchData', data)
+      this.sketchData = data
+    },
+    openShell () {
+      let $ = this
+      console.log('execute the command statement')
       let postData = {
-        // 'imgUrl': 'img/sketchImg.png'
         'imgUrl': this.sketchData
       }
-      // console.log('sketchData', postData.imgUrl)
       this.axios.post(
-        'http://localhost:5000/search',
+        'http://localhost:5000/shell',
         postData
       ).then(
         res => {
-          console.log(res.data)
+          $.modalData = res.data
+          console.log($.modalData)
         }
       ).catch(
         res => {
           console.log(res.data)
         }
       )
-    },
-    getSketchData (data) {
-      //   console.log('sketchData', data)
-      this.sketchData = data
     }
   }
 }

@@ -1,9 +1,6 @@
 <template>
   <div class="paint_canvas">
-    <div
-      ref="container"
-      class="container"
-    />
+    <div ref="container" class="container" />
     <!-- <div
       ref="layers_previewer"
       class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100"
@@ -228,14 +225,14 @@ export default {
       this.canvasGroup.push(this.drawingScope())
       this.layerCount++
       this.layerActive++
-    //   this.previewLayer()
+      //   this.previewLayer()
     },
     removeLayer: function () {
       this.drawingLayer.get(this.layerCount).destroy()
       this.drawingLayer.draw()
       this.layerCount--
       this.layerActive--
-    //   this.previewLayer()
+      //   this.previewLayer()
     },
     previewLayer: function () {
       // eslint-disable-next-line camelcase
@@ -261,34 +258,34 @@ export default {
       this.layerActive = Number(e.srcElement.id.split('_')[2])
     },
     onSave: function () {
-      console.log(this.canvasGroup)
+      // console.log(this.canvasGroup)
       //   let oCanvas = this.canvasGroup[0]
       //   Canvas2Image.saveAsPNG(oCanvas, true)
 
       let dlLink = document.createElement('a')
       let oCanvas = this.canvasGroup[0]
-      let dataUrl = oCanvas.toDataURL({format: 'image/png'})
+      let dataUrl = oCanvas.toDataURL({ format: 'image/png' })
       dlLink.download = 'sketchImg'
       dlLink.href = dataUrl
       // 点击后下载图片
       // dlLink.click()
       return dataUrl
 
-    //   axios
-    //     .post('https://www.ultratks.live/api/sketch/stroke/save_history', {
-    //       request_type: 'save_history'
-    //     })
-    //     .then(function (response) {
-    //       if (response.data.response_type === 'save_confirmed') {
-    //         console.log('save confirmed')
-    //       } else {
-    //         throw Error('Failed. Please contact the server admin.')
-    //       }
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error)
-    //       self.operation = 'Confirm'
-    //     })
+      //   axios
+      //     .post('https://www.ultratks.live/api/sketch/stroke/save_history', {
+      //       request_type: 'save_history'
+      //     })
+      //     .then(function (response) {
+      //       if (response.data.response_type === 'save_confirmed') {
+      //         console.log('save confirmed')
+      //       } else {
+      //         throw Error('Failed. Please contact the server admin.')
+      //       }
+      //     })
+      //     .catch(function (error) {
+      //       console.log(error)
+      //       self.operation = 'Confirm'
+      //     })
     }
   },
   watch: {
@@ -347,10 +344,10 @@ export default {
   text-align: center;
   display: inline-block;
   width: 100%;
-  height: 100%
+  height: 100%;
 }
-.paint_canvas{
-    width:100%;
-    height:100%;
+.paint_canvas {
+  width: 100%;
+  height: 100%;
 }
 </style>
