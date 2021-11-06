@@ -66,8 +66,22 @@
       </div>
     </div>
     <div class="container">
-      <PaintCanvas ref="paintCanvas" :mode="mode" :brushColor="brushColor" />
+      <PaintCanvas
+        ref="paintCanvas"
+        :mode="mode"
+        :brushColor="brushColor"
+        :brushSize="brushSize"
+        :eraserSize="eraserSize"
+      />
     </div>
+    <!-- <div>
+      <div>
+        <label>Brush size:</label>
+        <input type="range" v-model.number="brushSize" :min="0" :max="36" />
+        <label>Eraser size:</label>
+        <input type="range" v-model.number="eraserSize" :min="0" :max="50" />
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -80,13 +94,18 @@ export default {
   data: () => ({
     mode: '',
     brushColor: '',
+    brushSize: 3,
+    eraserSize: 20,
     defaultMode: 'brush',
-    defaultBrushColor: '#ff0000',
+    defaultBrushColor: '#000000',
     currentAction: 'draw'
   }),
   mounted: function () {
     // 初期化
     this.init()
+    // this.setCanvasBackwrite(
+    //   '/home/du/iwaitPro/sketch-ui/src/assets/img.png'
+    // )
     // for : onAddLayer()
   },
   methods: {
@@ -95,7 +114,7 @@ export default {
       this.brushColor = this.defaultBrushColor
       this.onAction('draw')
       this.currentAction = 'draw'
-      console.log(this.$refs)
+      // console.log(this.$refs)
     },
     onDraw: function () {
       this.mode = 'brush'
@@ -140,6 +159,9 @@ export default {
       let imgUrl = this.$refs.paintCanvas.onSave()
       // console.log('imgUrl', imgUrl)
       this.$emit('getSketchValue', imgUrl)
+    },
+    setCanvasBackwrite: function (imgSrc) {
+      this.$refs.paintCanvas.setCanvas(imgSrc)
     }
   }
 }

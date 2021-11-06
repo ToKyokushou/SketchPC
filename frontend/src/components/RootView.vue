@@ -7,7 +7,10 @@
         canvas_loader_container
       "
     >
-      <PaintCanvasLoader v-on:getSketchValue="getSketchValue" />
+      <PaintCanvasLoader
+        v-on:getSketchValue="getSketchValue"
+        ref="canvasLoader"
+      />
     </div>
   </div>
 </template>
@@ -27,6 +30,28 @@ export default {
     getSketchValue (val) {
       // console.log('sketchValue', val)
       this.$emit('getSketchData', val)
+    },
+    importPng (val) {
+      let $ = this
+      // $.$refs.canvasLoader.setCanvasBackwrite(val)
+      // console.log(val)
+      // let postData = {
+      //   'canvasData': canvasData
+      // }
+      this.axios.post(
+        'http://localhost:5000/getBase'
+        // postData
+      ).then(
+        res => {
+          // console.log(res.data)
+          let data = res.data
+          $.$refs.canvasLoader.setCanvasBackwrite(data)
+        }
+      ).catch(
+        res => {
+          console.log(res.data)
+        }
+      )
     }
   }
 }

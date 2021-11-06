@@ -31,8 +31,17 @@
       </el-col>
       <el-col :span="18">
         <div class="main_part">
-          <viewport v-if="reFresh" :points="points"></viewport>
-          <rootview v-if="sketchReFresh" v-on:getSketchData="getSketchData" />
+          <viewport
+            v-if="reFresh"
+            ref="canvasData"
+            :points="points"
+            :modalFile="modalFile"
+          ></viewport>
+          <rootview
+            v-if="sketchReFresh"
+            ref="canvasView"
+            v-on:getSketchData="getSketchData"
+          ></rootview>
         </div>
       </el-col>
       <el-col :span="3">
@@ -43,9 +52,11 @@
           <!-- <el-button type="primary" plain @click="search3D">
             3D Search
           </el-button> -->
-          <el-button type="primary" plain> Transform </el-button>
+          <el-button type="primary" plain @click="getPng">
+            Transform
+          </el-button>
           <!-- <el-button type="primary" plain @click="openShell"> Shell </el-button> -->
-          <div class="right_bottom">
+          <!-- <div class="right_bottom">
             <p>
               X
               <el-input></el-input>
@@ -58,6 +69,9 @@
               Z
               <el-input></el-input>
             </p>
+          </div> -->
+          <div class="right_bottom">
+            <panel ref="controlPanel"></panel>
           </div>
         </div>
       </el-col>
@@ -69,6 +83,7 @@
 // import upload from '../components/upload.vue'
 import ViewPort from '../components/ViewPort.vue'
 import RootView from '../components/RootView.vue'
+import ControlPanel from '../components/ControlPanel.vue'
 
 export default {
   name: 'sketchPC',
@@ -78,7 +93,7 @@ export default {
       reFresh: false,
       sketchReFresh: false,
       sketchData: null,
-      modalData: null
+      modalFile: null
     }
   },
   watch: {
@@ -88,20 +103,28 @@ export default {
         this.reFresh = true
       })
     },
-    'modalData': function (val) {
-      console.log('modalData change')
-      let filename = val
-      filename = filename.substring(0, filename.lastIndexOf('/'))
-      console.log(filename)
+    'modalFile': function (val) {
+      console.log('modalFile change')
+      // let filename = val
+      // filename = filename.substring(55, 61)
+      // this.modalFile = val
+      // console.log(val)
+      this.reFresh = false
+      this.sketchReFresh = false
+      this.$nextTick(() => {
+        this.reFresh = true
+      })
     }
   },
   components: {
     //     upload
     viewport: ViewPort,
-    rootview: RootView
+    rootview: RootView,
+    panel: ControlPanel
   },
   methods: {
     importFile () {
+      this.modalFile = null
       document.getElementById('files').click()
     },
     fileLoad (points) {
@@ -161,8 +184,33 @@ export default {
         postData
       ).then(
         res => {
-          $.modalData = res.data
-          console.log($.modalData)
+          let filePath = res.data
+          filePath = filePath.substring(55, 61)
+          $.modalFile = filePath
+          // console.log($.modalFile)
+        }
+      ).catch(
+        res => {
+          console.log(res.data)
+        }
+      )
+    },
+    getPng () {
+      let $ = this
+      this.$refs.controlPanel.toggleAxisLines()
+      let canvasData = this.$refs.canvasData.transCanvasData('test get png')
+      // console.log(canvasData)
+      let postData = {
+        'canvasData': canvasData
+      }
+      this.axios.post(
+        'http://localhost:5000/trans',
+        postData
+      ).then(
+        res => {
+          // console.log(res.data)
+          // $.$refs.canvasView.importPng('/home/du/iwaitPro/SketchPC/backend/3.txt')
+          $.$refs.canvasView.importPng()
         }
       ).catch(
         res => {

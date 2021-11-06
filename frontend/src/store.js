@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 import {
   Scene,
   TrackballControls,
@@ -20,7 +21,7 @@ import {
   Points,
   PointsMaterial
   // MTLLoader,
-  // OBJLoader,
+  // OBJLoader
   // Box3
 } from 'three-full'
 
@@ -40,6 +41,16 @@ export default new Vuex.Store({
   getters: {
     CAMERA_POSITION: state => {
       return state.camera ? state.camera.position : null
+    },
+    PNG_DATA: state => {
+      var link = document.createElement('a')
+      // 通过超链接herf属性，设置要保存到文件中的数据
+      var canvas = state.renderer.domElement
+      // console.log(canvas)
+      // 获取canvas对象
+      link.href = canvas.toDataURL('image/png')
+      // console.log(link.href)
+      return link.href
     }
   },
   mutations: {
@@ -48,7 +59,11 @@ export default new Vuex.Store({
       state.height = height
     },
     INITIALIZE_RENDERER (state, el) {
-      state.renderer = new WebGLRenderer({ antialias: true })
+      // console.log(el)
+      // console.log(el.offsetWidth)
+      // console.log(el.offsetHeight)
+      state.renderer = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })
+      // console.log(window.devicePixelRatio)
       state.renderer.setPixelRatio(window.devicePixelRatio)
       state.renderer.setSize(state.width, state.height)
       el.appendChild(state.renderer.domElement)
@@ -83,7 +98,7 @@ export default new Vuex.Store({
     UPDATE_CONTROLS (state) {
       state.controls.update()
     },
-    INITIALIZE_SCENE (state, { points }) {
+    INITIALIZE_SCENE (state, { points, modalFile }) {
       state.scene = new Scene()
       state.scene.background = new Color(0xcccccc)
       state.scene.fog = new FogExp2(0xcccccc, 0.002)
@@ -108,22 +123,80 @@ export default new Vuex.Store({
       //     })
       // })
 
+      if (modalFile) {
+        // var objLoader = new OBJLoader()
+        var fileName = '/static/threeDs/' + modalFile + '.json'
+        // objLoader.load(fileName, function (obj) {
+        //   // console.log(obj)
+        //   console.log(obj.children[0].material)
+        //   obj.scale.set(200, 200, 200)
+        //   // obj.position.set(0, 0, 0)
+        //   // let bbox = new Box3().setFromObject(obj)
+        //   // x = bbox.max.x - bbox.min.x
+        //   // y = bbox.max.y - bbox.min.y
+        //   // z = bbox.max.z - bbox.min.z
+        //   // obj.position.set(
+        //   //   -(bbox.max.x + bbox.min.x) / 2,
+        //   //   -(bbox.max.y + bbox.min.y) / 2,
+        //   //   -(bbox.max.z + bbox.min.z) / 2
+        //   // )
+        //   // obj.children[0].geometry.center()
+        //   obj.children[0].material.size = 6
+        //   obj.children[0].material.color.set(0xff0000)
+        //   state.scene.add(obj)
+        // })
+        // var json1 = null
+        var request = new XMLHttpRequest()
+        request.open('get', fileName)
+        request.send(null)
+        request.onload = function () {
+          if (request.status === 200) {
+            var json1 = JSON.parse(request.responseText)
+            var geometry1 = new Geometry()
+            var material1 = new PointsMaterial({
+              size: 1,
+              color: 0xff0000
+              // flatShading: true
+              // vertexColors: true,
+              // color: 0xffffff
+            })
+            // console.log(json1)
+            // var points1 = JSON.parse(fileName)
+            var pointset1 = json1.point_set
+            var x1, y1, z1
+            for (var i = 0; i < pointset1.length; i++) {
+              x1 = pointset1[i][0] * 200
+              y1 = pointset1[i][1] * 200
+              z1 = pointset1[i][2] * 200
+              var particle1 = new Vector3(x1, y1, z1)
+              geometry1.vertices.push(particle1)
+              // geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+            }
+            var cloud1 = new Points(geometry1, material1)
+            state.scene.add(cloud1)
+          }
+        }
+      }
+
       // START: this part is about point clouds
       var geometry = new Geometry()
       var material = new PointsMaterial({
-        size: 5,
+        size: 3,
         color: 0x0000ff
         // flatShading: true
+        // vertexColors: true,
+        // color: 0xffffff
       })
       points = JSON.parse(points)
       var pointset = points.point_set
       var x, y, z
-      for (var i = 0; i < pointset.length; i++) {
-        x = pointset[i][0] * 200
-        y = pointset[i][1] * 200
-        z = pointset[i][2] * 200
+      for (var j = 0; j < pointset.length; j++) {
+        x = pointset[j][0] * 200
+        y = pointset[j][1] * 200
+        z = pointset[j][2] * 200
         var particle = new Vector3(x, y, z)
         geometry.vertices.push(particle)
+        // geometry.colors.push(new Color((Math.random()) * 0x00ffff))
       }
       var cloud
       cloud = new Points(geometry, material)
@@ -220,16 +293,33 @@ export default new Vuex.Store({
     SHOW_PYRAMIDS (state) {
       state.scene.add(...state.pyramids)
       state.renderer.render(state.scene, state.camera)
+    },
+    GET_PNG (state) {
+      // console.log('jin lai le')
+      // 创建一个超链接元素，用来下载保存数据的文件
+      // var link = document.createElement('a')
+      // 通过超链接herf属性，设置要保存到文件中的数据
+      // var canvas = state.renderer.domElement
+      // console.log(canvas)
+      // 获取canvas对象
+      // link.href = canvas.toDataURL('image/png')
+      // console.log(link.href)
+      // link.download = 'threejs.png'
+      // 下载文件名
+      // link.click()
+      // js代码触发超链接元素a的鼠标点击事件，开始下载文件到本地
+      // return 'sss'
     }
   },
   actions: {
-    INIT ({ state, commit }, { width, height, el, points }) {
+    INIT ({ state, commit }, { width, height, el, points, modalFile }) {
       return new Promise(resolve => {
         commit('SET_VIEWPORT_SIZE', { width, height })
         commit('INITIALIZE_RENDERER', el)
         commit('INITIALIZE_CAMERA')
         commit('INITIALIZE_CONTROLS')
-        commit('INITIALIZE_SCENE', { points })
+        commit('INITIALIZE_SCENE', { points, modalFile })
+        // console.log(modalFile)
 
         // Initial scene rendering
         state.renderer.render(state.scene, state.camera)

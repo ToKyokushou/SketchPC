@@ -1,3 +1,3 @@
-0.596382 - /home/du/iwaitPro/Database/SHREC12/Extended/D00141view/10.jpg
-0.556671 - /home/du/iwaitPro/Database/SHREC12/Extended/D00141view/9.jpg
-0.552356 - /home/du/iwaitPro/Database/SHREC12/Extended/D00338view/101.jpg
+0.537453 - /home/du/iwaitPro/Database/SHREC12/Extended/D00111view/77.jpg
+0.526505 - /home/du/iwaitPro/Database/SHREC12/Extended/D00110view/77.jpg
+0.513752 - /home/du/iwaitPro/Database/SHREC12/Extended/D00007view/87.jpg

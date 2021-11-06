@@ -24,6 +24,14 @@ export default {
       type: String,
       default: ''
     },
+    brushSize: {
+      type: Number,
+      default: 3
+    },
+    eraserSize: {
+      type: Number,
+      default: 20
+    },
     backgroundImage: {
       type: String,
       default: ''
@@ -78,7 +86,7 @@ export default {
       this.context = canvas.getContext('2d')
       this.context.strokeStyle = this.brushColor
       this.context.lineJoin = 'round'
-      this.context.lineWidth = 3
+      this.context.lineWidth = this.brushSize
 
       // add event
       drawingScope.on('mousedown', this.mousedown)
@@ -269,6 +277,7 @@ export default {
       dlLink.href = dataUrl
       // 点击后下载图片
       // dlLink.click()
+      // console.log(dataUrl)
       return dataUrl
 
       //   axios
@@ -286,11 +295,39 @@ export default {
       //       console.log(error)
       //       self.operation = 'Confirm'
       //     })
+    },
+    setCanvas: function (imgSrc) {
+      // this.context.putImageData(imgObject, 0, 0);
+      // console.log(imgSrc)
+      let self = this
+      let image = new Image()
+      image.src = imgSrc
+      image.onload = function () {
+        self.context.drawImage(image, 0, 0)
+        self.drawingLayer.draw()
+      }
     }
   },
   watch: {
+    mode: function () {
+      if (this.mode === 'brush') {
+        this.context.lineWidth = this.brushSize
+      } else {
+        this.context.lineWidth = this.eraserSize
+      }
+    },
     brushColor: function () {
       this.context.strokeStyle = this.brushColor
+    },
+    brushSize: function () {
+      if (this.mode === 'brush') {
+        this.context.lineWidth = this.brushSize
+      }
+    },
+    eraserSize: function () {
+      if (this.mode === 'eraser') {
+        this.context.lineWidth = this.eraserSize
+      }
     },
     layerActive: function () {
       for (let idx = 0; idx < this.canvasGroup.length; idx++) {
