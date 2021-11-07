@@ -19,10 +19,19 @@ import {
   Line,
   // ThreeMFLoader,
   Points,
-  PointsMaterial
+  PointsMaterial,
   // MTLLoader,
-  // OBJLoader
-  // Box3
+  OBJLoader,
+  // BoxGeometry,
+  // MeshBasicMaterial,
+  Mesh
+  // Mesh,
+  // ConvexGeometry,
+  // MeshLambertMaterial,
+  // BackSide,
+  // FrontSide
+  // Box3,
+  // MeshBasicMaterial
 } from 'three-full'
 
 Vue.use(Vuex)
@@ -103,6 +112,7 @@ export default new Vuex.Store({
       state.scene.background = new Color(0xcccccc)
       state.scene.fog = new FogExp2(0xcccccc, 0.002)
 
+      // START: this part is about using objloader to load 3D modal
       // var mtlLoader = new MTLLoader()
       // var objLoader = new OBJLoader()
       // mtlLoader.load('static/threeDs/girl_complete_03.mtl', function (material) {
@@ -122,60 +132,96 @@ export default new Vuex.Store({
       //       state.scene.add(obj)
       //     })
       // })
+      // END: part END
 
       if (modalFile) {
         // var objLoader = new OBJLoader()
-        var fileName = '/static/threeDs/' + modalFile + '.json'
+        // var fileName = '/static/threeDs/' + modalFile + '.obj'
         // objLoader.load(fileName, function (obj) {
-        //   // console.log(obj)
+        //   console.log(obj)
         //   console.log(obj.children[0].material)
         //   obj.scale.set(200, 200, 200)
-        //   // obj.position.set(0, 0, 0)
-        //   // let bbox = new Box3().setFromObject(obj)
+        //   obj.traverse(function (child) {
+        //     if (child instanceof Mesh) {
+        //       console.log('aaaa')
+        //       child.material.transparent = true
+        //     }
+        //   })
+        //   obj.position.set(0, 0, 0)
+        //   let bbox = new Box3().setFromObject(obj)
         //   // x = bbox.max.x - bbox.min.x
         //   // y = bbox.max.y - bbox.min.y
         //   // z = bbox.max.z - bbox.min.z
-        //   // obj.position.set(
-        //   //   -(bbox.max.x + bbox.min.x) / 2,
-        //   //   -(bbox.max.y + bbox.min.y) / 2,
-        //   //   -(bbox.max.z + bbox.min.z) / 2
-        //   // )
-        //   // obj.children[0].geometry.center()
+        //   obj.position.set(
+        //     -(bbox.max.x + bbox.min.x) / 2,
+        //     -(bbox.max.y + bbox.min.y) / 2,
+        //     -(bbox.max.z + bbox.min.z) / 2
+        //   )
+        //   obj.children[0].geometry.center()
         //   obj.children[0].material.size = 6
         //   obj.children[0].material.color.set(0xff0000)
         //   state.scene.add(obj)
         // })
-        // var json1 = null
-        var request = new XMLHttpRequest()
-        request.open('get', fileName)
-        request.send(null)
-        request.onload = function () {
-          if (request.status === 200) {
-            var json1 = JSON.parse(request.responseText)
-            var geometry1 = new Geometry()
-            var material1 = new PointsMaterial({
-              size: 1,
-              color: 0xff0000
-              // flatShading: true
-              // vertexColors: true,
-              // color: 0xffffff
-            })
-            // console.log(json1)
-            // var points1 = JSON.parse(fileName)
-            var pointset1 = json1.point_set
-            var x1, y1, z1
-            for (var i = 0; i < pointset1.length; i++) {
-              x1 = pointset1[i][0] * 200
-              y1 = pointset1[i][1] * 200
-              z1 = pointset1[i][2] * 200
-              var particle1 = new Vector3(x1, y1, z1)
-              geometry1.vertices.push(particle1)
-              // geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+
+        // START: this part is to load point clouds
+        // var fileName = '/static/threeDs/' + modalFile + '.json'
+        // var fileName = '/static/threeDs/D00001.json'
+        // var request = new XMLHttpRequest()
+        // request.open('get', fileName)
+        // request.send(null)
+        // request.onload = function () {
+        //   if (request.status === 200) {
+        //     var json1 = JSON.parse(request.responseText)
+        //     var geometry1 = new Geometry()
+        //     var material1 = new PointsMaterial({
+        //       size: 1,
+        //       color: 0xff0000
+        //       // flatShading: true
+        //       // vertexColors: true,
+        //       // color: 0xffffff
+        //     })
+        //     // console.log(json1)
+        //     // var points1 = JSON.parse(fileName)
+        //     var pointset1 = json1.point_set
+        //     var x1, y1, z1
+        //     for (var i = 0; i < pointset1.length; i++) {
+        //       x1 = pointset1[i][0] * 200
+        //       y1 = pointset1[i][1] * 200
+        //       z1 = pointset1[i][2] * 200
+        //       var particle1 = new Vector3(x1, y1, z1)
+        //       geometry1.vertices.push(particle1)
+        //       // geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+        //     }
+        //     var cloud1 = new Points(geometry1, material1)
+        //     state.scene.add(cloud1)
+
+        //     // var meshGeometry = new ConvexGeometry(geometry1.vertices)
+        //     // var meshMaterial = new MeshLambertMaterial({
+        //     //   color: 0xffffff,
+        //     //   opacity: 0.5,
+        //     //   transparent: true
+        //     // })
+        //     // var mesh = new Mesh(meshGeometry, meshMaterial)
+        //     // state.scene.add(mesh)
+        //   }
+        // }
+
+        // START: load_obj as mesh
+        var objLoader = new OBJLoader()
+        var fileName = '/static/threeDs/' + modalFile + '.obj'
+        console.log(fileName)
+        objLoader.load(fileName, function (obj) {
+          console.log(obj)
+          console.log(obj.children[0].material)
+          obj.scale.set(200, 200, 200)
+          obj.traverse(function (child) {
+            if (child instanceof Mesh) {
+              child.material.transparent = false
             }
-            var cloud1 = new Points(geometry1, material1)
-            state.scene.add(cloud1)
-          }
-        }
+          })
+          obj.position.set(0, 0, 0)
+          state.scene.add(obj)
+        })
       }
 
       // START: this part is about point clouds

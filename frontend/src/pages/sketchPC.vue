@@ -184,10 +184,11 @@ export default {
         postData
       ).then(
         res => {
+          console.log(res.data)
           let filePath = res.data
           filePath = filePath.substring(55, 61)
           $.modalFile = filePath
-          // console.log($.modalFile)
+          console.log($.modalFile)
         }
       ).catch(
         res => {

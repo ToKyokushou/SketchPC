@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, json, render_template, request, jsonify
 from flask_cors import CORS
 from PIL import Image
 from matplotlib import pyplot as plt
@@ -7,8 +7,10 @@ import base64
 import subprocess
 import io
 import cv2
+import meshio
 import numpy as np
 import os
+import pygalmesh
 
 
 app = Flask(__name__,
@@ -49,30 +51,28 @@ def shell():
     file2.write(imgByteArr)
     file2.close()
 
-    # img2 = img.resize((800, 800), Image.ANTIALIAS)
-    # imgByteArr = io.BytesIO()
-    # img2.save(imgByteArr, format='PNG')
-    # imgByteArr = imgByteArr.getvalue()
-    # file2 = open('1.jpg', 'wb')
-    # file2.write(imgByteArr)
-    # file2.close()
-
     # do not have to import stdout
     ex = subprocess.Popen('sh execute_command.sh',
                           stderr=subprocess.PIPE, shell=True)
     stdout, stderr = ex.communicate()
     status = ex.wait()
-    # print('cmd out: ', stdout.decode())
     f = open('./testData.txt')
     lines = f.readlines()
-    # for line2 in lines:
-    #     print(line2)
+
+    # mesh = pygalmesh.remesh_surface(
+    #     '/home/du/iwaitPro/SketchPC/frontend/static/threeDs/D00001.off',
+    #     max_edge_size_at_feature_edges=0.025,
+    #     min_facet_angle=25,
+    #     max_radius_surface_delaunay_ball=0.1,
+    #     max_facet_distance=0.001,
+    #     verbose=False)
+    # meshio.write('test.obj', mesh)
     return lines[0]
 
     # /home/du/iwaitPro/Database/SHREC12/Extended/D00261view/34.jpg
 
 
-@app.route("/trans", methods=['POST'])
+@ app.route("/trans", methods=['POST'])
 def trans():
     canvasData = request.json.get('canvasData')
     img_b64code = canvasData.replace('data:image/png;base64,', '')
@@ -157,7 +157,7 @@ def trans():
     return 'aaa'
 
 
-@app.route("/getBase", methods=['POST'])
+@ app.route("/getBase", methods=['POST'])
 def getBase():
     f = open('./4.png', 'rb')
     head = bytes('data:image/png;base64,', 'utf-8')
