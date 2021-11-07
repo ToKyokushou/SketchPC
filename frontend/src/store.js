@@ -7,7 +7,7 @@ import {
   PerspectiveCamera,
   WebGLRenderer,
   Color,
-  FogExp2,
+  // FogExp2,
   // CylinderBufferGeometry,
   // MeshPhongMaterial,
   // Mesh,
@@ -24,7 +24,11 @@ import {
   OBJLoader,
   // BoxGeometry,
   // MeshBasicMaterial,
-  Mesh
+  Mesh,
+  // MeshBasicMaterial,
+  // MeshLambertMaterial,
+  // MeshStandardMaterial,
+  MeshNormalMaterial
   // Mesh,
   // ConvexGeometry,
   // MeshLambertMaterial,
@@ -45,7 +49,8 @@ export default new Vuex.Store({
     scene: null,
     renderer: null,
     axisLines: [],
-    pyramids: []
+    pyramids: [],
+    modalData: []
   },
   getters: {
     CAMERA_POSITION: state => {
@@ -109,9 +114,9 @@ export default new Vuex.Store({
     },
     INITIALIZE_SCENE (state, { points, modalFile }) {
       state.scene = new Scene()
-      state.scene.background = new Color(0xcccccc)
-      state.scene.fog = new FogExp2(0xcccccc, 0.002)
-
+      state.scene.background = new Color(0xd9ecff)
+      // state.scene.fog = new FogExp2(0xcccccc, 0.002)
+      state.pyramids = []
       // START: this part is about using objloader to load 3D modal
       // var mtlLoader = new MTLLoader()
       // var objLoader = new OBJLoader()
@@ -135,6 +140,7 @@ export default new Vuex.Store({
       // END: part END
 
       if (modalFile) {
+        state.modalData = []
         // var objLoader = new OBJLoader()
         // var fileName = '/static/threeDs/' + modalFile + '.obj'
         // objLoader.load(fileName, function (obj) {
@@ -209,28 +215,35 @@ export default new Vuex.Store({
         // START: load_obj as mesh
         var objLoader = new OBJLoader()
         var fileName = '/static/threeDs/' + modalFile + '.obj'
-        console.log(fileName)
+        // var fileName = '/static/threeDs/test.obj'
+        // console.log(fileName)
         objLoader.load(fileName, function (obj) {
           console.log(obj)
           console.log(obj.children[0].material)
           obj.scale.set(200, 200, 200)
           obj.traverse(function (child) {
             if (child instanceof Mesh) {
-              child.material.transparent = false
+              child.material = new MeshNormalMaterial({
+                // color: 0xffffff
+                // transparent: true,
+                // opacity: 0.2
+              })
             }
           })
           obj.position.set(0, 0, 0)
-          state.scene.add(obj)
+          state.modalData.push(obj)
+          // state.scene.add(obj)
+          state.scene.add(...state.modalData)
         })
       }
 
       // START: this part is about point clouds
       var geometry = new Geometry()
       var material = new PointsMaterial({
-        size: 3,
-        color: 0x0000ff
+        size: 2,
+        // color: 0x0000ff
         // flatShading: true
-        // vertexColors: true,
+        vertexColors: true
         // color: 0xffffff
       })
       points = JSON.parse(points)
@@ -242,11 +255,13 @@ export default new Vuex.Store({
         z = pointset[j][2] * 200
         var particle = new Vector3(x, y, z)
         geometry.vertices.push(particle)
-        // geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+        geometry.colors.push(new Color((Math.random()) * 0x00ffff))
       }
       var cloud
       cloud = new Points(geometry, material)
-      state.scene.add(cloud)
+      state.pyramids.push(cloud)
+      // state.scene.add(cloud)
+      state.scene.add(...state.pyramids)
       // END: this part is about point clouds
 
       // START: this part is about mesh
@@ -338,6 +353,14 @@ export default new Vuex.Store({
     },
     SHOW_PYRAMIDS (state) {
       state.scene.add(...state.pyramids)
+      state.renderer.render(state.scene, state.camera)
+    },
+    HIDE_MODALDATA (state) {
+      state.scene.remove(...state.modalData)
+      state.renderer.render(state.scene, state.camera)
+    },
+    SHOW_MODALDATA (state) {
+      state.scene.add(...state.modalData)
       state.renderer.render(state.scene, state.camera)
     },
     GET_PNG (state) {

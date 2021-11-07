@@ -1,10 +1,16 @@
 <template>
   <div class="container">
-    <div class="header">March Score ( 90 ) Points</div>
+    <!-- <div class="header">March Score ( 90 ) Points</div> -->
+    <div class="header">3D Modal Search and Generation System</div>
     <el-row :gutter="10">
       <el-col :span="3">
         <div class="left_part">
-          <el-button type="primary" plain @click="importFile">
+          <el-button
+            class="left_part_button"
+            type="primary"
+            plain
+            @click="importFile"
+          >
             Import
           </el-button>
           <input
@@ -15,7 +21,12 @@
             @change="fileLoad"
           />
           <!-- <upload></upload> -->
-          <el-button type="primary" plain @click="displaySketch">
+          <el-button
+            class="left_part_button"
+            type="primary"
+            plain
+            @click="displaySketch"
+          >
             {{ sketchReFresh ? "Cancel" : "Draw" }}
           </el-button>
           <!-- <el-button type='primary' plain>
@@ -46,13 +57,23 @@
       </el-col>
       <el-col :span="3">
         <div class="right_part">
-          <el-button type="primary" plain @click="openShell">
+          <el-button
+            class="right_part_button"
+            type="primary"
+            plain
+            @click="openShell"
+          >
             3D Search
           </el-button>
           <!-- <el-button type="primary" plain @click="search3D">
             3D Search
           </el-button> -->
-          <el-button type="primary" plain @click="getPng">
+          <el-button
+            class="right_part_button"
+            type="primary"
+            plain
+            @click="getPng"
+          >
             Transform
           </el-button>
           <!-- <el-button type="primary" plain @click="openShell"> Shell </el-button> -->
@@ -198,7 +219,7 @@ export default {
     },
     getPng () {
       let $ = this
-      this.$refs.controlPanel.toggleAxisLines()
+      // this.$refs.controlPanel.toggleAxisLines()
       let canvasData = this.$refs.canvasData.transCanvasData('test get png')
       // console.log(canvasData)
       let postData = {
@@ -264,8 +285,19 @@ export default {
 .right_bottom {
   position: fixed;
   bottom: 0px;
+  width: 300px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 5px;
 }
 .el-input {
   width: 78%;
+}
+.left_part_button {
+  margin-left: 77px;
+}
+.right_part_button {
+  margin-left: 77px;
 }
 </style>
