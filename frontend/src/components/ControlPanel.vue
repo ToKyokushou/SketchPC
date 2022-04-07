@@ -111,7 +111,7 @@ export default {
       'SHOW_MODALDATA'
     ]),
     resetCameraPosition () {
-      this.SET_CAMERA_POSITION({ x: 0, y: 0, z: 500 })
+      this.SET_CAMERA_POSITION({ x: -50, y: 0, z: 700 })
       this.RESET_CAMERA_ROTATION()
     },
     toggleAxisLines () {
@@ -140,6 +140,11 @@ export default {
         this.SHOW_MODALDATA()
         this.modalDataVisible = true
       }
+    },
+    resetControlPanle () {
+      this.axisLinesVisible = true
+      this.pyramidsVisible = true
+      this.modalDataVisible = true
     }
   }
 }

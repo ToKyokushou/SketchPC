@@ -1,4 +1,5 @@
 from flask import Flask, json, render_template, request, jsonify
+from flask.templating import DispatchingJinjaLoader
 from flask_cors import CORS
 from PIL import Image
 from matplotlib import pyplot as plt
@@ -11,6 +12,8 @@ import meshio
 import numpy as np
 import os
 import pygalmesh
+import dataio
+import myICP
 
 
 app = Flask(__name__,
@@ -67,7 +70,11 @@ def shell():
     #     max_facet_distance=0.001,
     #     verbose=False)
     # meshio.write('test.obj', mesh)
-    return lines[0]
+
+    # return lines[0]
+
+    line = '0.282965 - /home/du/iwaitPro/experimentalData/D00103view/94.jpg'
+    return line
 
     # /home/du/iwaitPro/Database/SHREC12/Extended/D00261view/34.jpg
 
@@ -81,30 +88,71 @@ def trans():
     file.write(imgData)
     file.close()
 
-    # function 1 START
-    img = cv2.imread('./2.png')
-    # cv2.imshow('original', img)
-    # rows, cols, ch = img.shape
-    size = img.shape
+    # START: this part for threshold
+    imgB = cv2.imread('./2.png')
+    size = imgB.shape
     h = size[0]
     w = size[1]
-    # print(h)
-    # print(w)
-    Ksize = 7
-    L2g = True
-    edge = cv2.Canny(img, 50, 100, apertureSize=Ksize, L2gradient=L2g)
-    contours, hierarchy = cv2.findContours(
-        edge, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    dst = np.ones(img.shape, dtype=np.uint8)
+    imgGray = cv2.cvtColor(imgB, cv2.COLOR_BGR2GRAY)
+    ret, thresh1 = cv2.threshold(imgGray, 217, 255, cv2.THRESH_BINARY)
+    # ret, thresh2 = cv2.threshold(imgGray, 217, 255, cv2.THRESH_BINARY_INV)
+    # ret, thresh3 = cv2.threshold(imgGray, 217, 255, cv2.THRESH_TRUNC)
+    # ret, thresh4 = cv2.threshold(imgGray, 217, 255, cv2.THRESH_TOZERO)
+    # ret, thresh5 = cv2.threshold(imgGray, 217, 255, cv2.THRESH_TOZERO_INV)
+    # titles = ['Original Image', 'BINARY',
+    #           'BINARY_INV', 'TRUNC', 'TOZERO', 'TOZERO_INV']
+    # images = [imgB, thresh1, thresh2, thresh3, thresh4, thresh5]
+    # for i in range(6):
+    #     plt.subplot(2, 3, i+1), plt.imshow(images[i], 'gray')  # 避免灰度图彩色映射
+    #     plt.title(titles[i])
+    #     plt.xticks([]), plt.yticks([])  # 去掉刻度
+    #     # plt.savefig("bigpic_2.png")
+    # plt.show()
+    # cv2.imshow('Original Image', imgB)
+    # cv2.imshow('BINARY', thresh1)
+    # cv2.imshow('BINARY_INV', thresh2)
+    # cv2.imshow('TRUNC', thresh3)
+    # cv2.imshow('TOZERO', thresh4)
+    # cv2.imshow('TOZERO_INV', thresh5)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    contours, hier = cv2.findContours(
+        thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    dst = np.ones(imgB.shape, dtype=np.uint8)
     file1 = cv2.drawContours(dst, contours, -1, (0, 255, 0), 1)
-    # cv2.imshow('dst', dst)
-    # cv2.waitKey()
     fig = plt.figure(figsize=(36.88, 25.16))
-    plt.plot(), plt.imshow(file1)
+    plt.plot(), plt.imshow(file1, 'gray')
     plt.xticks([]), plt.yticks([])
     plt.axis('off')
     path = ('./3.png')
     plt.savefig(path, dpi=100, bbox_inches='tight', pad_inches=0.0)
+    # END: this part for threshold
+
+    # function 1 START
+    # img = cv2.imread('./2.png')
+    # # cv2.imshow('original', img)
+    # # rows, cols, ch = img.shape
+    # size = img.shape
+    # h = size[0]
+    # w = size[1]
+    # # print(h)
+    # # print(w)
+    # Ksize = 7
+    # L2g = True
+    # edge = cv2.Canny(img, 50, 100, apertureSize=Ksize, L2gradient=L2g)
+    # contours, hierarchy = cv2.findContours(
+    #     edge, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # dst = np.ones(img.shape, dtype=np.uint8)
+    # file1 = cv2.drawContours(dst, contours, -1, (0, 255, 0), 1)
+    # # cv2.imshow('dst', dst)
+    # # cv2.waitKey()
+    # fig = plt.figure(figsize=(36.88, 25.16))
+    # plt.plot(), plt.imshow(file1)
+    # plt.xticks([]), plt.yticks([])
+    # plt.axis('off')
+    # path = ('./3.png')
+    # plt.savefig(path, dpi=100, bbox_inches='tight', pad_inches=0.0)
+    # function 2 END
 
     # function 2 START : cv2.imshow error
     # image = cv2.imread("2.png")
@@ -164,6 +212,24 @@ def getBase():
     base64_data = base64.b64encode(f.read())
     base = head + base64_data
     return base
+
+
+@ app.route("/iteration", methods=['POST'])
+def iteration():
+    targetFile = request.json.get('target')
+    originalFile = request.json.get('original')
+    print('json file name')
+    print(targetFile)
+    print(originalFile)
+    print('start load json file')
+    targetData = dataio.loadJson(
+        '/home/du/iwaitPro/SketchPC/frontend/static/threeDs/'+targetFile)
+    originalData = dataio.loadJson(
+        '/home/du/iwaitPro/SketchPC/frontend/static/threeDs/'+originalFile+'.json')
+    _, _, originalData2 = myICP.icp(originalData, targetData, maxIteration=30,
+                                    tolerance=0.000001, controlPoints=3000)
+    fileName = dataio.outputICP(originalFile, originalData2)
+    return fileName
 
 
 if __name__ == '__main__':

@@ -94,7 +94,7 @@ export default {
   data: () => ({
     mode: '',
     brushColor: '',
-    brushSize: 3,
+    brushSize: 1,
     eraserSize: 20,
     defaultMode: 'brush',
     defaultBrushColor: '#000000',

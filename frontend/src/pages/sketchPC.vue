@@ -29,6 +29,14 @@
           >
             {{ sketchReFresh ? "Cancel" : "Draw" }}
           </el-button>
+          <el-button
+            class="left_part_button"
+            type="primary"
+            plain
+            @click="confirmExportResult"
+          >
+            Export
+          </el-button>
           <!-- <el-button type='primary' plain>
                         Clear
                     </el-button>
@@ -76,6 +84,14 @@
           >
             Transform
           </el-button>
+          <el-button
+            class="right_part_button"
+            type="primary"
+            plain
+            @click="iteration"
+          >
+            ICP
+          </el-button>
           <!-- <el-button type="primary" plain @click="openShell"> Shell </el-button> -->
           <!-- <div class="right_bottom">
             <p>
@@ -114,7 +130,9 @@ export default {
       reFresh: false,
       sketchReFresh: false,
       sketchData: null,
-      modalFile: null
+      modalFile: null,
+      objFile: null,
+      icpObjFile: null
     }
   },
   watch: {
@@ -152,14 +170,16 @@ export default {
       //   let points
       let $ = this
       const selectedFile = this.$refs.refFile.files[0]
-      let reader = new FileReader()
-      reader.readAsText(selectedFile)
-      reader.onload = function () {
-        // console.log(this.result)
-        // points = this.result
-        // $.points = 'hahahahaha'
-        $.$data.displayPC = true
-        $.$data.points = this.result
+      if (selectedFile) {
+        let reader = new FileReader()
+        reader.readAsText(selectedFile)
+        reader.onload = function () {
+          // console.log(this.result)
+          // points = this.result
+          // $.points = 'hahahahaha'
+          $.$data.displayPC = true
+          $.$data.points = this.result
+        }
       }
     },
     displaySketch () {
@@ -207,9 +227,21 @@ export default {
         res => {
           console.log(res.data)
           let filePath = res.data
-          filePath = filePath.substring(55, 61)
-          $.modalFile = filePath
+          filePath = filePath.substring(45, 52)
+          console.log(filePath)
+          $.objFile = filePath
+          // $.objFile = '/D00107'
+          $.modalFile = $.objFile
           console.log($.modalFile)
+          this.resetControlPanel()
+          // $.objFile = filePath
+          // if ($.objFile === $.modalFile) {
+          //   alert('The same model was retrieved')
+          // } else {
+          //   $.modalFile = $.objFile
+          //   console.log($.modalFile)
+          //   this.resetControlPanel()
+          // }
         }
       ).catch(
         res => {
@@ -239,6 +271,43 @@ export default {
           console.log(res.data)
         }
       )
+    },
+    iteration () {
+      let $ = this
+      if ($.objFile) {
+        $.modalFile = $.objFile
+      }
+      let postData = {
+        'target': $.$refs.refFile.files[0].name,
+        'original': $.modalFile
+      }
+      console.log(postData)
+      this.axios.post(
+        'http://localhost:5000/iteration',
+        postData
+      ).then(
+        res => {
+          console.log(res.data)
+          $.icpObjFile = res.data
+          $.modalFile = $.icpObjFile
+          this.resetControlPanel()
+        }
+      ).catch(
+        res => {
+          console.log(res.data)
+        }
+      )
+    },
+    confirmExportResult () {
+      console.log('download start')
+      let link = document.createElement('a')
+      link.href = '/static/threeDs/' + this.modalFile + '.obj'
+      console.log(link.href)
+      link.click()
+      URL.revokeObjectURL(link.href)
+    },
+    resetControlPanel () {
+      this.$refs.controlPanel.resetControlPanle()
     }
   }
 }
@@ -278,6 +347,7 @@ export default {
 .main_part {
   margin: 5px 0;
   background: #d9ecff;
+  /* background: #fff; */
   /* min-height:50px; */
   height: 100%;
   position: relative;

@@ -25,10 +25,9 @@ import {
   // BoxGeometry,
   // MeshBasicMaterial,
   Mesh,
-  // MeshBasicMaterial,
-  // MeshLambertMaterial,
-  // MeshStandardMaterial,
-  MeshNormalMaterial
+  MeshNormalMaterial,
+  TextureLoader,
+  RepeatWrapping
   // Mesh,
   // ConvexGeometry,
   // MeshLambertMaterial,
@@ -59,7 +58,9 @@ export default new Vuex.Store({
     PNG_DATA: state => {
       var link = document.createElement('a')
       // 通过超链接herf属性，设置要保存到文件中的数据
-      var canvas = state.renderer.domElement
+      var canvas = null
+      state.renderer.render(state.scene, state.camera)
+      canvas = state.renderer.domElement
       // console.log(canvas)
       // 获取canvas对象
       link.href = canvas.toDataURL('image/png')
@@ -93,7 +94,8 @@ export default new Vuex.Store({
         // 4. Far clipping plane
         1000
       )
-      state.camera.position.z = 500
+      state.camera.position.x = -50
+      state.camera.position.z = 700
     },
     INITIALIZE_CONTROLS (state) {
       state.controls = new TrackballControls(
@@ -115,6 +117,7 @@ export default new Vuex.Store({
     INITIALIZE_SCENE (state, { points, modalFile }) {
       state.scene = new Scene()
       state.scene.background = new Color(0xd9ecff)
+      // state.scene.background = new Color(0xffffff)
       // state.scene.fog = new FogExp2(0xcccccc, 0.002)
       state.pyramids = []
       // START: this part is about using objloader to load 3D modal
@@ -138,6 +141,11 @@ export default new Vuex.Store({
       //     })
       // })
       // END: part END
+
+      const texture = new TextureLoader().load('/home/du/iwaitPro/SketchPC/frontend/static/logo.png')
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(4, 4)
 
       if (modalFile) {
         state.modalData = []
@@ -215,7 +223,7 @@ export default new Vuex.Store({
         // START: load_obj as mesh
         var objLoader = new OBJLoader()
         var fileName = '/static/threeDs/' + modalFile + '.obj'
-        // var fileName = '/static/threeDs/test.obj'
+        // var fileName = '/static/threeDs/D00001.obj'
         // console.log(fileName)
         objLoader.load(fileName, function (obj) {
           console.log(obj)
@@ -224,44 +232,46 @@ export default new Vuex.Store({
           obj.traverse(function (child) {
             if (child instanceof Mesh) {
               child.material = new MeshNormalMaterial({
-                // color: 0xffffff
+                // color: 0x33a1c9
                 // transparent: true,
-                // opacity: 0.2
+                // opacity: 0.90
               })
             }
           })
           obj.position.set(0, 0, 0)
           state.modalData.push(obj)
-          // state.scene.add(obj)
           state.scene.add(...state.modalData)
+          state.renderer.render(state.scene, state.camera)
         })
       }
 
       // START: this part is about point clouds
-      var geometry = new Geometry()
-      var material = new PointsMaterial({
-        size: 2,
-        // color: 0x0000ff
-        // flatShading: true
-        vertexColors: true
-        // color: 0xffffff
-      })
-      points = JSON.parse(points)
-      var pointset = points.point_set
-      var x, y, z
-      for (var j = 0; j < pointset.length; j++) {
-        x = pointset[j][0] * 200
-        y = pointset[j][1] * 200
-        z = pointset[j][2] * 200
-        var particle = new Vector3(x, y, z)
-        geometry.vertices.push(particle)
-        geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+      if (points) {
+        var geometry = new Geometry()
+        var material = new PointsMaterial({
+          size: 2,
+          // color: 0x0000ff
+          // flatShading: true
+          vertexColors: true
+          // color: 0xffffff
+        })
+        points = JSON.parse(points)
+        var pointset = points.point_set
+        var x, y, z
+        for (var j = 0; j < pointset.length; j++) {
+          x = pointset[j][0] * 200
+          y = pointset[j][1] * 200
+          z = pointset[j][2] * 200
+          var particle = new Vector3(x, y, z)
+          geometry.vertices.push(particle)
+          geometry.colors.push(new Color((Math.random()) * 0x00ffff))
+        }
+        var cloud
+        cloud = new Points(geometry, material)
+        state.pyramids.push(cloud)
+        // state.scene.add(cloud)
+        state.scene.add(...state.pyramids)
       }
-      var cloud
-      cloud = new Points(geometry, material)
-      state.pyramids.push(cloud)
-      // state.scene.add(cloud)
-      state.scene.add(...state.pyramids)
       // END: this part is about point clouds
 
       // START: this part is about mesh
@@ -378,6 +388,9 @@ export default new Vuex.Store({
       // link.click()
       // js代码触发超链接元素a的鼠标点击事件，开始下载文件到本地
       // return 'sss'
+    },
+    RENDER_MODEL () {
+      console.log('start render new model 2')
     }
   },
   actions: {

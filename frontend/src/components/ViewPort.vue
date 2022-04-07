@@ -15,14 +15,20 @@ export default {
   },
   methods: {
     ...mapGetters(['PNG_DATA']),
-    ...mapMutations(['RESIZE', 'GET_PNG']),
+    ...mapMutations(['RESIZE', 'GET_PNG', 'RENDER_MODEL']),
     ...mapActions(['INIT', 'ANIMATE']),
     transCanvasData (val) {
       // console.log(val)
       // let canvas = this.GET_PNG()
       // console.log(canvas)
-      let canvasData = this.PNG_DATA()
+      let canvasData = null
+      canvasData = this.PNG_DATA()
       return canvasData
+    },
+    renderModel () {
+      // only show 3D model here
+      console.log('start render new model 1')
+      this.RENDER_MODEL()
     }
   },
   mounted () {
